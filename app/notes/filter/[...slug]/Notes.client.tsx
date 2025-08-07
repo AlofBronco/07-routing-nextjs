@@ -50,7 +50,7 @@ const NotesClient = ({ initialData, tag }: NotesClientProps) => {
     setCurrentPage(1);
   }, 300);
 
-  if (isLoading) return <p>Loading, please wait...</p>;
+  // if (isLoading) return <p>Loading, please wait...</p>;
   if (error || !notes) return <p>Something went wrong.</p>;
 
   return (
