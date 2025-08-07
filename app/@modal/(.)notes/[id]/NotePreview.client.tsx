@@ -4,27 +4,24 @@ import Modal from '@/components/Modal/Modal';
 import css from './NotePreview.module.css';
 import { fetchNoteById } from '@/lib/api';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Note } from '@/types/note';
+import { useQuery } from '@tanstack/react-query';
 
-const NotePreview = () => {
-  const { id } = useParams<{ id: string }>();
+const NotePreviewClient = () => {
   const router = useRouter();
+  const { id } = useParams<{ id: string }>();
 
-  const [note, setNote] = useState<Note | null>(null);
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['note', id],
+    queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
+  });
 
-  useEffect(() => {
-    fetchNoteById(id)
-      .then(setNote)
-      .catch(() => router.back());
-  }, [id, router]);
-
-  if (!note)
-    return (
-      <Modal onClose={() => {}}>
-        <p>Loading note...</p>
-      </Modal>
-    );
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error || !note) return <p>Something went wrong.</p>;
 
   const formattedDate = note?.updatedAt ? `Updated at: ${note?.updatedAt}` : `Created at: ${note?.createdAt}`;
 
@@ -43,4 +40,4 @@ const NotePreview = () => {
   );
 };
 
-export default NotePreview;
+export default NotePreviewClient;
