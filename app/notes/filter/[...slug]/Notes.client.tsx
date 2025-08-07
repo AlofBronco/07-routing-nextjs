@@ -10,7 +10,7 @@ import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { useDebouncedCallback } from 'use-debounce';
-import { Note } from '@/types/note';
+import { Note, NoteTag } from '@/types/note';
 
 interface FetchNotesResponse {
   notes: Note[];
@@ -19,16 +19,17 @@ interface FetchNotesResponse {
 
 interface NotesClientProps {
   initialData: FetchNotesResponse;
+  tag?: NoteTag;
 }
 
-const NotesClient = ({ initialData }: NotesClientProps) => {
+const NotesClient = ({ initialData, tag }: NotesClientProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState('');
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['notes', query, currentPage],
-    queryFn: () => fetchNotes(query, currentPage),
+    queryKey: ['notes', query, currentPage, tag],
+    queryFn: () => fetchNotes(query, currentPage, tag),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
     initialData,
